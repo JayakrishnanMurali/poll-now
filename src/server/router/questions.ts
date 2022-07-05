@@ -28,6 +28,7 @@ export const questionRouter = createRouter()
       return await ctx.prisma.pollQuestions.create({
         data: {
           question: input.question,
+          options: [],
         },
       });
     },
