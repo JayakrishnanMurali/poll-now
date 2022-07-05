@@ -1,19 +1,46 @@
-import type { NextPage } from "next";
-import { prisma } from "../server/db/client";
+import { useRef } from "react";
+import { trpc } from "../utils/trpc";
 
-export default function Home(props: any) {
-  return (
-    <>
-      <code>{props?.questions}</code>
-    </>
-  );
-}
-
-export const getServerSideProps = async () => {
-  const questions = await prisma.pollQuestions.findMany();
-  return {
-    props: {
-      questions: JSON.stringify(questions),
+const QuestionCreator: React.FC = () => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const client = trpc.useContext();
+  const { mutate, isLoading } = trpc.useMutation("questions.create", {
+    onSuccess: () => {
+      client.invalidateQueries("questions.get-all");
+      if (!inputRef.current) return;
+      inputRef.current.value = "";
     },
-  };
+  });
+
+  return (
+    <input
+      ref={inputRef}
+      disabled={isLoading}
+      className="border-2"
+      onKeyDown={(event) => {
+        if (event.key === "Enter") {
+          console.log("Enter!! ", event.currentTarget.value);
+          mutate({ question: event.currentTarget.value });
+        }
+      }}
+    ></input>
+  );
 };
+
+export default function Home() {
+  const { data, isLoading } = trpc.useQuery(["questions.get-all"]);
+  if (isLoading) return <div>Loading...</div>;
+
+  if (data)
+    return (
+      <div className="p-6 flex flex-col">
+        <div className="flex flex-col">
+          <div className="text-2xl font-bold">Questions</div>
+          {data.map(({ question, id }) => (
+            <code key={id}>{question}</code>
+          ))}
+        </div>
+        <QuestionCreator />
+      </div>
+    );
+}

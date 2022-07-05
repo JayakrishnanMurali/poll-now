@@ -55,5 +55,5 @@ model PollQuestions {
   id        String    @unique @default(cuid())
   createdAt DateTime  @default(now())
   endsAt    DateTime?
-  question  String
+  question  String    @db.VarChar(5000)
 }
