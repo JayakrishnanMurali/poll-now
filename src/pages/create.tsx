@@ -16,20 +16,21 @@ const CreateQuestionForm = () => {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors },
   } = useForm<CreateQuestionInputType>({
     resolver: zodResolver(createQuestionValidator),
-    // defaultValues: {
-    //   options: [{ text: "Yes" }, { text: "No" }],
-    // },
+    defaultValues: {
+      options: [{ text: "Yes" }, { text: "No" }],
+    },
   });
   const onSubmit = (data: any) => console.log(data);
 
-  //  const { fields, append, prepend, remove, swap, move, insert } =
-  //    useFieldArray<CreateQuestionInputType>({
-  //      name: "options", // unique name for your Field Array,
-  //      control, // control props comes from useForm (optional: if you are using FormContext)
-  //    });
+  const { fields, append, prepend, remove, swap, move, insert } =
+    useFieldArray<CreateQuestionInputType>({
+      name: "options", // unique name for your Field Array,
+      control, // control props comes from useForm (optional: if you are using FormContext)
+    });
 
   const router = useRouter();
 
@@ -83,7 +84,7 @@ const CreateQuestionForm = () => {
               )}
             </div>
             <div className="grid grid-cols-1 w-full gap-x-5 gap-y-3 md:grid-cols-2">
-              {/* {fields.map((field, index) => {
+              {fields.map((field, index) => {
                 return (
                   <div key={field.id}>
                     <section
@@ -116,14 +117,14 @@ const CreateQuestionForm = () => {
                     </section>
                   </div>
                 );
-              })} */}
+              })}
             </div>
             <div className="flex items-center my-3">
               <button
                 type="button"
                 value="Add more options"
                 className="btn btn-ghost"
-                // onClick={() => append({ text: "Another Option" })}
+                onClick={() => append({ text: "Another Option" })}
               >
                 Add options
               </button>
