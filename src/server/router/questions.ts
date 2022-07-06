@@ -3,6 +3,8 @@ import { z } from "zod";
 import { createRouter } from "./context";
 import Cookies from "cookies";
 import { nanoid } from "nanoid";
+import { createQuestionValidator } from "../../shared/create-question-validator";
+import { TRPCError } from "@trpc/server";
 
 export const questionRouter = createRouter()
   .middleware(async ({ ctx, next }) => {
@@ -45,11 +47,9 @@ export const questionRouter = createRouter()
     },
   })
   .mutation("create", {
-    input: z.object({
-      question: z.string().min(5).max(600),
-    }),
+    input: createQuestionValidator,
     async resolve({ ctx, input }) {
-      if (!ctx.token) return { error: "UNAUTHORIZED" };
+      if (!ctx.token) throw new TRPCError({ code: "UNAUTHORIZED" });
       return await ctx.prisma.pollQuestions.create({
         data: {
           question: input.question,

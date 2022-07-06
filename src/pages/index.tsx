@@ -10,8 +10,15 @@ export default function Home() {
   if (data)
     return (
       <div className="p-6 flex flex-col">
-        <div className="flex flex-col">
+        <div className="header flex w-full justify-between">
           <div className="text-2xl font-bold">Your Questions</div>
+          <Link href="/create">
+            <a className="bg-gray-300 rounded text-gray-900 p-4">
+              Create New Question
+            </a>
+          </Link>
+        </div>
+        <div className="flex flex-col">
           {data.map(({ question, id, createdAt }) => (
             <div key={id} className="flex flex-col my-2">
               <Link href={`/question/${id}`}>{question}</Link>
@@ -19,7 +26,6 @@ export default function Home() {
             </div>
           ))}
         </div>
-        <Link href="/create">Create New Question</Link>
       </div>
     );
 }
