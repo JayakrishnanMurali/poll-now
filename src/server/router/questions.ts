@@ -18,9 +18,16 @@ export const questionRouter = createRouter()
     }
     return next();
   })
-  .query("get-all", {
+  .query("get-all-my-questions", {
     async resolve({ ctx }) {
-      return await ctx.prisma.pollQuestions.findMany();
+      if (!ctx.token) return [];
+      return await ctx.prisma.pollQuestions.findMany({
+        where: {
+          ownerToken: {
+            equals: ctx.token,
+          },
+        },
+      });
     },
   })
   .query("get-by-id", {
